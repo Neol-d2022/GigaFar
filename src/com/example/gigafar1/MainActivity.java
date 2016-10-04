@@ -34,6 +34,7 @@ public class MainActivity extends Activity {
 	private String[][] mTechLists;
 	private Button uploadBtn;
 	private final String upLoadServerUri = "http://www.gigafar.com/testuploadpage.php";
+	//檔案會上傳到這個網址(POST)
 	ProgressDialog dialog = null;
 	int serverResponseCode = 0;
 	
@@ -47,6 +48,7 @@ public class MainActivity extends Activity {
                 Intent intent = new Intent( Intent.ACTION_PICK );
                 intent.setType( "*/*" );
                 Intent intent2 = Intent.createChooser( intent, "Choose File to Upload" );
+                //顯示視窗
                 dialog = ProgressDialog.show(MainActivity.this, "", "Uploading file...", true);
                 startActivityForResult( intent2, 0 );
             }
@@ -54,9 +56,7 @@ public class MainActivity extends Activity {
         mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
         textView = (TextView) findViewById(R.id.textView);
         if(mNfcAdapter == null) {
-			/*Toast.makeText(this,  "沒有NFC功能",  Toast.LENGTH_LONG).show();
-			finish();
-			return ;*/
+        	//手機不支援NFC
         	textView.setText("[Warning] NFC functions do not work with this device.");
 		}
         else {
@@ -73,33 +73,14 @@ public class MainActivity extends Activity {
             mTechLists = new String[][] { new String[] { "MifareClassic", "MifareUltralight", "IsoDep", "Ndef", "NdefFormatable", "NfcA", "NfcB", "NfcF", "NfcV", "TagTechnology" } };
         }
     }
-
-    /*@Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }*/
     
     @Override
 	protected void onNewIntent(Intent intent){
     	String idstr = ByteArrayToHexString(intent.getByteArrayExtra(NfcAdapter.EXTRA_ID));
     	textView.setText("Discovered a tag with id(" + idstr + ")");
     	Toast.makeText(this, idstr, Toast.LENGTH_LONG).show();
-    	//Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://120.125.96.158/ex14.asp?fname="+idstr));
     	Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.gigafar.com/index_wine/m_wine/index.php?id=" + idstr));
+    	//裡面的網址是NFC掃描器找到東西時 會跳出來的網址
     	startActivity(browserIntent);
 	}
     
@@ -107,31 +88,6 @@ public class MainActivity extends Activity {
     public void onResume() {
     	super.onResume();
     	if(mNfcAdapter != null) mNfcAdapter.enableForegroundDispatch(this, mPendingIntent, mFilters, mTechLists);
-    	/*Toast.makeText(this, getIntent().getAction(), Toast.LENGTH_LONG).show();
-    	if(NfcAdapter.ACTION_TAG_DISCOVERED.equals(getIntent().getAction())){
-    		Parcelable[] msgs = getIntent().getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
-    			Toast.makeText(this, new String("ACTION_TAG_DISCOVERED"), Toast.LENGTH_LONG).show();
-    			NdefRecord firstRecord = ((NdefMessage)msgs[0]).getRecords()[0];
-    			byte[] payload = firstRecord.getPayload();
-    			int payloadLength = payload.length;
-    			int langLength = payload[0];
-    			int textLength = payloadLength - langLength - 1;
-    			byte[] text = new byte[textLength];
-    			System.arraycopy(payload, 1+langLength, text, 0, textLength);
-    			Toast.makeText(this, new String(text), Toast.LENGTH_LONG).show();
-    		}
-    		else if(NfcAdapter.ACTION_NDEF_DISCOVERED.equals(getIntent().getAction())) {
-    			Toast.makeText(this, "ACTION_NDEF_DISCOVERED", Toast.LENGTH_LONG).show();
-    			Parcelable[] rawMsgs = getIntent().getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
-    			NdefMessage msg = (NdefMessage) rawMsgs[0];
-    			Toast.makeText(this, new String(msg.getRecords()[0].getPayload()), Toast.LENGTH_LONG).show();
-    		}
-    		else if(NfcAdapter.ACTION_TECH_DISCOVERED.equals(getIntent().getAction())) {
-    			Toast.makeText(this, "ACTION_TECH_DISCOVERED", Toast.LENGTH_LONG).show();
-    			Parcelable[] rawMsgs = getIntent().getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
-    			NdefMessage msg = (NdefMessage) rawMsgs[0];
-    			Toast.makeText(this, new String(msg.getRecords()[0].getPayload()), Toast.LENGTH_LONG).show();
-    		}*/
     }
 
 	@Override
@@ -148,8 +104,8 @@ public class MainActivity extends Activity {
 	            Uri uri = data.getData();
 	            try {
 	            	final String path = FileUtils.getPath(this, uri);
-	            	//Toast.makeText(this,  path,  Toast.LENGTH_LONG).show();
 	            	new Thread(new Runnable() {
+	            		//上傳檔案的視窗
 	                    public void run() {
 	                    	Looper.prepare();
 	                        runOnUiThread(new Runnable() { public void run() {} });                      
@@ -181,6 +137,7 @@ public class MainActivity extends Activity {
 	    return out;
 	}
 	
+	//POST上傳檔案的函數
 	public int uploadFile(String sourceFileUri) {
         String fileName = sourceFileUri;
         HttpURLConnection conn = null;
@@ -194,12 +151,9 @@ public class MainActivity extends Activity {
         File sourceFile = new File(sourceFileUri); 
         if (!sourceFile.isFile()) {
              dialog.dismiss(); 
-             //Log.e("uploadFile", "Source File not exist :"+sourceFileUri);
-             //Toast.makeText(this,  "Source File not exist : " + sourceFileUri,  Toast.LENGTH_LONG).show();
              final String emsg = "Source File not exist : " + sourceFileUri;
              runOnUiThread(new Runnable() {
                  public void run() {
-                     //messageText.setText("Got Exception : see logcat ");
                      Toast.makeText(MainActivity.this, "Got Exception : " + emsg, Toast.LENGTH_LONG).show();
                  }
              });
@@ -207,7 +161,6 @@ public class MainActivity extends Activity {
         }
         else
         {
-        	//Toast.makeText(this,  "Uploading...",  Toast.LENGTH_LONG).show();
         	try { 
                  FileInputStream fileInputStream = new FileInputStream(sourceFile);
                  URL url = new URL(upLoadServerUri);
@@ -238,13 +191,9 @@ public class MainActivity extends Activity {
                  dos.writeBytes(twoHyphens + boundary + twoHyphens + lineEnd);
                  serverResponseCode = conn.getResponseCode();
                  String serverResponseMessage = conn.getResponseMessage();
-                 //Log.i("uploadFile", "HTTP Response is : " + serverResponseMessage + ": " + serverResponseCode);
-                 //Toast.makeText(this,  serverResponseMessage,  Toast.LENGTH_LONG).show();
                  if(serverResponseCode == 200){
                      runOnUiThread(new Runnable() {
                           public void run() {
-                              //String msg = "File Upload Completed.\n\n See uploaded file here : \n\n" + " http://www.androidexample.com/media/uploads/" + uploadFileName;
-                              //MainActivity.setText(msg);
                               Toast.makeText(MainActivity.this, "File Upload Complete.", Toast.LENGTH_LONG).show();
                           }
                       });                
@@ -260,22 +209,18 @@ public class MainActivity extends Activity {
                 final String emsg = ex.getMessage();
                 runOnUiThread(new Runnable() {
                     public void run() {
-                        //messageText.setText("MalformedURLException Exception : check script url.");
                         Toast.makeText(MainActivity.this, "MalformedURLException : " + emsg, Toast.LENGTH_LONG).show();
                     }
                 });
-                //Log.e("Upload file to server", "error: " + ex.getMessage(), ex);  
             } catch (Exception e) {
                 dialog.dismiss();  
                 e.printStackTrace();
                 final String emsg = e.getMessage();
                 runOnUiThread(new Runnable() {
                     public void run() {
-                        //messageText.setText("Got Exception : see logcat ");
                         Toast.makeText(MainActivity.this, "Got Exception : " + emsg, Toast.LENGTH_LONG).show();
                     }
-                });
-                //Log.e("Upload file to server Exception", "Exception : " + e.getMessage(), e);  
+                }); 
             }
             dialog.dismiss();       
             return serverResponseCode; 
