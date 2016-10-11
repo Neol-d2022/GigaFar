@@ -33,7 +33,7 @@ public class MainActivity extends Activity {
 	private IntentFilter[] mFilters;
 	private String[][] mTechLists;
 	private Button uploadBtn;
-	private final String upLoadServerUri = "http://www.gigafar.com/testuploadpage.php";
+	private final String upLoadServerUri = "http://192.168.1.102/index.html";
 	ProgressDialog dialog = null;
 	int serverResponseCode = 0;
 	
@@ -99,7 +99,7 @@ public class MainActivity extends Activity {
     	textView.setText("Discovered a tag with id(" + idstr + ")");
     	Toast.makeText(this, idstr, Toast.LENGTH_LONG).show();
     	//Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://120.125.96.158/ex14.asp?fname="+idstr));
-    	Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.gigafar.com/index_wine/m_wine/index.php?id=" + idstr));
+    	Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://192.168.1.102/index.html"));
     	startActivity(browserIntent);
 	}
     
