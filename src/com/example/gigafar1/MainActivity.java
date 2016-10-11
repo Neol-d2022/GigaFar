@@ -38,8 +38,8 @@ public class MainActivity extends Activity implements OnClickListener {
 	private String[][] mTechLists;
 	private Button uploadBtn;
 	private Button scanBtn;
-	private final String upLoadServerUri = "http://www.gigafar.com/testuploadpage.php";
-	private final String ContentURL = "http://www.gigafar.com/index_wine/m_wine/index.php";
+	private final String upLoadServerUri = "http://192.168.1.102/testuploadpage.php";
+	private final String ContentURL = "http://192.168.1.102/index_wine/m_wine/index.php";
 	ProgressDialog dialog = null;
 	int serverResponseCode = 0;
 	
