@@ -39,6 +39,7 @@ public class MainActivity extends Activity implements OnClickListener {
 	private Button uploadBtn;
 	private Button scanBtn;
 	private final String upLoadServerUri = "http://www.gigafar.com/testuploadpage.php";
+	private final String ContentURL = "http://www.gigafar.com/index_wine/m_wine/index.php";
 	ProgressDialog dialog = null;
 	int serverResponseCode = 0;
 	
@@ -107,7 +108,7 @@ public class MainActivity extends Activity implements OnClickListener {
     	textView.setText("Discovered a tag with id(" + idstr + ")");
     	Toast.makeText(this, idstr, Toast.LENGTH_LONG).show();
     	//Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://120.125.96.158/ex14.asp?fname="+idstr));
-    	Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.gigafar.com/index_wine/m_wine/index.php?id=" + idstr));
+    	Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(ContentURL + "?id=" + idstr));
     	startActivity(browserIntent);
 	}
     
@@ -176,7 +177,7 @@ public class MainActivity extends Activity implements OnClickListener {
 	        		Toast toast = Toast.makeText(getApplicationContext(), 
 	        				scanningResult.getContents() + "/" + scanningResult.getFormatName(), Toast.LENGTH_LONG);
 		        	    toast.show();
-	        		Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.gigafar.com/index_wine/m_wine/index.php?id=" + scanningResult.getContents()));
+	        		Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(ContentURL + "?id=" + scanningResult.getContents()));
 	            	startActivity(browserIntent);
 	        	}
 	        	else {
