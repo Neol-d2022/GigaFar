@@ -25,14 +25,19 @@ import android.widget.Toast;
 
 import com.example.gigafar1.R;
 
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
 
-public class MainActivity extends Activity {
+
+
+public class MainActivity extends Activity implements OnClickListener {
 	private TextView textView;
 	private NfcAdapter mNfcAdapter;
 	private PendingIntent mPendingIntent;
 	private IntentFilter[] mFilters;
 	private String[][] mTechLists;
 	private Button uploadBtn;
+	private Button scanBtn;
 	private final String upLoadServerUri = "http://www.gigafar.com/testuploadpage.php";
 	ProgressDialog dialog = null;
 	int serverResponseCode = 0;
@@ -41,7 +46,10 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Button uploadBtn = (Button)this.findViewById(R.id.uploadBtn);
+        uploadBtn = (Button)this.findViewById(R.id.uploadBtn);
+        scanBtn = (Button)findViewById(R.id.scan_button);
+        scanBtn.setOnClickListener(this);
+        
         uploadBtn.setOnClickListener( new OnClickListener(){
             public void onClick(View arg0) {
                 Intent intent = new Intent( Intent.ACTION_PICK );
@@ -160,6 +168,22 @@ public class MainActivity extends Activity {
 	            }
 	            catch (Exception e) {}
 	        }
+	        break;
+	        default:
+	        	IntentResult scanningResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+	        	if (scanningResult != null) {
+	        		//we have a result
+	        		Toast toast = Toast.makeText(getApplicationContext(), 
+	        				scanningResult.getContents() + "/" + scanningResult.getFormatName(), Toast.LENGTH_LONG);
+		        	    toast.show();
+	        		Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.gigafar.com/index_wine/m_wine/index.php?id=" + scanningResult.getContents()));
+	            	startActivity(browserIntent);
+	        	}
+	        	else {
+	        	    Toast toast = Toast.makeText(getApplicationContext(), 
+	        	        "No scan data received!", Toast.LENGTH_SHORT);
+	        	    toast.show();
+	        	}
 	        break;
 	    }
 	    super.onActivityResult(requestCode, resultCode, data);
@@ -280,5 +304,14 @@ public class MainActivity extends Activity {
             dialog.dismiss();       
             return serverResponseCode; 
          }
+	}
+
+	@Override
+	public void onClick(View v) {
+		if(v.getId()==R.id.scan_button){
+			//scan
+			IntentIntegrator scanIntegrator = new IntentIntegrator(this);
+			scanIntegrator.initiateScan();
+		}
 	}
 }

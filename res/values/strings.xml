@@ -3,5 +3,7 @@
 
     <string name="app_name">GigaFar</string>
     <string name="hello_world">Hello world!</string>
+    <string name="upload">Upload</string>
+    <string name="scan">Scan</string>
 
 </resources>
